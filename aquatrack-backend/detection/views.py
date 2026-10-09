@@ -5,7 +5,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from monitoring.permissions import IsMaintenanceOrAdmin
+from monitoring.permissions import IsSuperuser
 from monitoring.utils import households_for, resolve_household
 
 from .models import AlertNotification, LeakDetection, MLModelEvaluation
@@ -89,7 +89,7 @@ class MLModelEvaluationViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin,
     """Results of the comparative model study. Maintenance/admin only."""
 
     serializer_class = MLModelEvaluationSerializer
-    permission_classes = [IsMaintenanceOrAdmin]
+    permission_classes = [IsSuperuser]
     queryset = MLModelEvaluation.objects.all()
     filterset_fields = ["track", "is_deployed", "model_name"]
 

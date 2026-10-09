@@ -21,7 +21,7 @@ export default function AuthPage({ register = false }) {
     }
   };
 
-  return <div className="auth"><h1>Aqua<span style={{ color: "var(--teal)" }}>Track</span></h1>
+  return <div className="auth"><h1>Aqua<span style={{ color: "var(--ocean)" }}>Track</span></h1>
     <p className="sub">Know your water use, catch leaks early, and see your bill before it arrives.</p>
     <form onSubmit={submit}>
       {register && <>

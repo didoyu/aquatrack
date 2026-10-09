@@ -1,0 +1,17 @@
+export const colors = {
+  ocean: '#087da5',
+  oceanDeep: '#075273',
+  aqua: '#21b6be',
+  aquaLight: '#e3f5f6',
+  canvas: '#f3f9fa',
+  surface: '#ffffff',
+  ink: '#153747',
+  muted: '#68808a',
+  line: '#d6e8ec',
+  positive: '#18704e',
+  positiveLight: '#e5f5ed',
+  warning: '#9b6200',
+  warningLight: '#fff3d7',
+  critical: '#b53435',
+  criticalLight: '#fff0ed',
+};

@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from .authentication import DeviceKeyAuthentication
 from .models import (ConsumptionSummary, Device, Household, PushToken, Sensor,
                      SystemLog, WaterReading)
-from .permissions import IsDevice, IsMaintenanceOrAdmin, IsMaintenanceOrReadOnly
+from .permissions import IsDevice, IsSuperuser, IsSuperuserOrReadOnly
 from .serializers import (ConsumptionSummarySerializer, DeviceSerializer, HeartbeatSerializer,
                           HouseholdSerializer, PushTokenSerializer, ReadingIngestSerializer,
                           SensorSerializer, SystemLogSerializer, WaterReadingSerializer)
@@ -22,6 +22,7 @@ from django.conf import settings
 # --------------------------------------------------------------- households
 class HouseholdViewSet(viewsets.ModelViewSet):
     serializer_class = HouseholdSerializer
+    permission_classes = [IsSuperuserOrReadOnly]
 
     def get_queryset(self):
         return households_for(self.request.user)
@@ -57,7 +58,7 @@ class HouseholdViewSet(viewsets.ModelViewSet):
 # --------------------------------------------------------------- devices & sensors
 class DeviceViewSet(viewsets.ModelViewSet):
     serializer_class = DeviceSerializer
-    permission_classes = [IsMaintenanceOrReadOnly]
+    permission_classes = [IsSuperuserOrReadOnly]
     filterset_fields = ["household", "status"]
 
     def get_queryset(self):
@@ -89,7 +90,7 @@ class DeviceViewSet(viewsets.ModelViewSet):
 
 class SensorViewSet(viewsets.ModelViewSet):
     serializer_class = SensorSerializer
-    permission_classes = [IsMaintenanceOrReadOnly]
+    permission_classes = [IsSuperuserOrReadOnly]
     filterset_fields = ["device", "sensor_type", "status"]
 
     def get_queryset(self):
@@ -134,7 +135,7 @@ class SummaryViewSet(viewsets.ReadOnlyModelViewSet):
 
 class SystemLogViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SystemLogSerializer
-    permission_classes = [IsMaintenanceOrAdmin]
+    permission_classes = [IsSuperuser]
     queryset = SystemLog.objects.all()
     filterset_fields = ["level", "source", "device", "household"]
 

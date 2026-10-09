@@ -26,8 +26,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    """Email-based user. Roles come from the paper's use-case diagram:
-    Homeowner and Maintenance personnel (plus Admin for the capstone team)."""
+    """Email-based user. Administrative access is granted only to Django superusers."""
 
     class Role(models.TextChoices):
         HOMEOWNER = "homeowner", "Homeowner"
@@ -42,10 +41,6 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     objects = UserManager()
-
-    @property
-    def is_maintenance(self):
-        return self.is_superuser or self.role in (self.Role.MAINTENANCE, self.Role.ADMIN)
 
     def __str__(self):
         return self.email

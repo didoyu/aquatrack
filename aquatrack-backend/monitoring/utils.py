@@ -5,8 +5,8 @@ from .models import Household
 
 
 def households_for(user):
-    """Homeowners see only their own households; maintenance/admin see all."""
-    if user.is_maintenance:
+    """Superusers see all households; other users see only their own."""
+    if user.is_superuser:
         return Household.objects.all()
     return Household.objects.filter(owner=user)
 

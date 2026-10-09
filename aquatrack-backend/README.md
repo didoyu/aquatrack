@@ -34,7 +34,7 @@ Run **accounts first** (custom user model):
 ```bash
 python manage.py makemigrations accounts monitoring detection billing
 python manage.py migrate
-python manage.py createsuperuser          # becomes role=admin
+python manage.py createsuperuser          # the only account with admin access
 python manage.py seed_defaults            # loads the COWD rate schedule
 ```
 
@@ -53,15 +53,17 @@ python manage.py runserver
 
 - API docs (Swagger, try requests in the browser): http://127.0.0.1:8000/api/docs/
 - Django admin: http://127.0.0.1:8000/admin/
-- Demo logins created by `simulate_data`: `demo@aquatrack.local / demo12345` (homeowner),
-  `maint@aquatrack.local / maint12345` (maintenance)
+- Demo login created by `simulate_data`: `demo@aquatrack.local / demo12345` (homeowner)
+
+Only Django superusers can create, update, or delete administrative records and access system logs
+or ML evaluations. A user's role label does not grant administrative permissions.
 
 `--leak-hours 60` makes each simulated leak last 60 h so you can see Stage 1 (>=24 h) and Stage 2 (>=48 h).
 
 ## 6. Run the tests
 
 ```bash
-python manage.py test
+python manage.py test accounts monitoring detection billing
 ```
 Includes the three billing examples from the paper (10 -> 218.40, 15 -> 371.15, 27 -> 746.85) and the
 two-stage leak escalation.
@@ -83,8 +85,8 @@ Schedule every 5 minutes: cron on the Raspberry Pi, Task Scheduler on Windows.
 | Leaks | `/api/leaks/`, `POST /api/leaks/{id}/inspect/` `resolve/` `false-alarm/` |
 | Alerts | `/api/alerts/`, `POST /{id}/read/`, `POST read-all/`, `GET unread-count/` |
 | Billing | `GET /api/billing/forecast/`, `/calculate/?cubic_meters=27`, `/rates/`, `/forecast/history/` |
-| Devices (maintenance) | `/api/devices/`, `POST /{id}/regenerate-key/`, `/api/sensors/`, `/api/logs/` |
-| ML study (maintenance) | `/api/ml/evaluations/`, `GET /api/ml/evaluations/comparison/` |
+| Devices (superuser writes; household-scoped reads) | `/api/devices/`, `POST /{id}/regenerate-key/`, `/api/sensors/`; system logs `/api/logs/` are superuser-only |
+| ML study (superuser only) | `/api/ml/evaluations/`, `GET /api/ml/evaluations/comparison/` |
 | ESP32 | `POST /api/ingest/readings/`, `POST /api/ingest/heartbeat/` (header `X-Device-Key`) |
 
 Screens in the wireframes map to: Dashboard -> `dashboard/`, Usage History -> `usage/` + `readings/`,
@@ -93,7 +95,7 @@ Billing -> `billing/forecast/`.
 
 ### ESP32 payload
 
-Register a device (as maintenance) with `POST /api/devices/` `{ "household": 1, "device_name": "ESP32-01" }`.
+Register a device as a superuser with `POST /api/devices/` `{ "household": 1, "device_name": "ESP32-01" }`.
 The response contains `api_key` **once**. The ESP32 then sends:
 
 ```http

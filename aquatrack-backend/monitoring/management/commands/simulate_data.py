@@ -3,8 +3,7 @@
     python manage.py simulate_data --days 30
     python manage.py simulate_data --days 5 --leak-hours 60 --detect     # triggers Stage 1 + Stage 2
 
-Creates demo accounts if missing:  demo@aquatrack.local / demo12345  (homeowner)
-                                    maint@aquatrack.local / maint12345 (maintenance)
+Creates a demo homeowner account if missing: demo@aquatrack.local / demo12345
 """
 import math
 import random
@@ -47,11 +46,6 @@ class Command(BaseCommand):
             "first_name": "Demo", "last_name": "Homeowner", "role": "homeowner"})
         if not owner.has_usable_password():
             owner.set_password("demo12345"); owner.save()
-        maint, created = User.objects.get_or_create(email="maint@aquatrack.local", defaults={
-            "first_name": "Demo", "last_name": "Maintenance", "role": "maintenance"})
-        if created:
-            maint.set_password("maint12345"); maint.save()
-
         household, _ = Household.objects.get_or_create(owner=owner, name="Demo Home",
                                                        defaults={"address": "Cagayan de Oro City"})
         device = Device.objects.filter(household=household).first()

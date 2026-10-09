@@ -17,7 +17,7 @@ export default function App() {
     <Route path="/anomalies" element={<AuthGuard><Anomalies /></AuthGuard>} />
     <Route path="/billing" element={<AuthGuard><Billing /></AuthGuard>} />
     <Route path="/alerts" element={<AuthGuard><Alerts /></AuthGuard>} />
-    <Route path="/admin" element={<AuthGuard><Admin /></AuthGuard>} />
+    <Route path="/admin" element={<AuthGuard superuserOnly><Admin /></AuthGuard>} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>;
 }
