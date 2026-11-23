@@ -6,7 +6,7 @@ import { fmt, peso, when } from "../utils/format.js";
 
 export default function Dashboard() {
   const household = useHousehold();
-  const { data, error } = useLoad(() => (household ? api(`/households/${household.id}/dashboard/`) : Promise.resolve(null)), [household?.id], 10000);
+  const { data, error } = useLoad(() => (household ? api(`/households/${household.id}/dashboard/`) : Promise.resolve(null)), [household?.id], 3000);
   if (error) return <p className="err">{error}</p>;
   if (!data) return <p className="muted">Loading your household…</p>;
   const leak = data.active_leak;

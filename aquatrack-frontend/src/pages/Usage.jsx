@@ -8,8 +8,8 @@ import { fmt, when } from "../utils/format.js";
 export default function Usage() {
   const household = useHousehold();
   const [period, setPeriod] = useState("daily");
-  const usage = useLoad(() => (household ? api(`/households/${household.id}/usage/?period=${period}`) : Promise.resolve([])), [household?.id, period]);
-  const logs = useLoad(() => (household ? api(`/readings/?household=${household.id}&page_size=15`) : Promise.resolve(null)), [household?.id]);
+  const usage = useLoad(() => (household ? api(`/households/${household.id}/usage/?period=${period}`) : Promise.resolve([])), [household?.id, period], 5000);
+  const logs = useLoad(() => (household ? api(`/readings/?household=${household.id}&page_size=15`) : Promise.resolve(null)), [household?.id], 3000);
   const label = (reading) => {
     const date = new Date(reading.period_start);
     return period === "monthly" ? date.toLocaleString("en", { month: "short" }) : `${date.getMonth() + 1}/${date.getDate()}`;

@@ -63,3 +63,47 @@ class RolePermissionTests(TestCase):
 
         self.client.force_login(self.superuser)
         self.assertEqual(self.client.get("/admin/").status_code, 200)
+
+
+class ESP32IngestTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.homeowner = User.objects.create_user(email="esp@example.com", password="test-password")
+        self.household = Household.objects.create(owner=self.homeowner, name="ESP Home")
+        self.superuser = User.objects.create_superuser(email="esp-admin@example.com", password="test-password")
+        self.client = APIClient()
+
+        self.client.force_authenticate(self.superuser)
+        res = self.client.post("/api/devices/", {"household": self.household.id, "device_name": "ESP32-01"})
+        self.assertEqual(res.status_code, 201)
+        self.device_key = res.data["api_key"]
+        self.client.force_authenticate(None)
+
+    def test_heartbeat_ingest_and_live_dashboard_readings(self):
+        hb = self.client.post(
+            "/api/ingest/heartbeat/",
+            {"firmware_version": "1.0.0"},
+            format="json",
+            HTTP_X_DEVICE_KEY=self.device_key,
+        )
+        self.assertEqual(hb.status_code, 200)
+
+        ingest = self.client.post(
+            "/api/ingest/readings/",
+            {"flow_rate": 4.5, "water_volume": 0.375, "sampling_interval": 5, "edge_flag": False},
+            format="json",
+            HTTP_X_DEVICE_KEY=self.device_key,
+        )
+        self.assertEqual(ingest.status_code, 201)
+        self.assertEqual(ingest.data["stored"], 1)
+
+        self.client.force_authenticate(self.homeowner)
+        dash = self.client.get(f"/api/households/{self.household.id}/dashboard/")
+        self.assertEqual(dash.status_code, 200)
+        self.assertEqual(dash.data["current_flow_rate"], 4.5)
+        self.assertEqual(dash.data["today_consumption_liters"], 0.38)
+        self.assertEqual(dash.data["devices"][0]["status"], "online")
+
+        readings = self.client.get(f"/api/readings/?household={self.household.id}")
+        self.assertEqual(readings.status_code, 200)
+        self.assertEqual(readings.data["results"][0]["flow_rate"], 4.5)
