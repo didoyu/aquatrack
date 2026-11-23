@@ -2,6 +2,40 @@
 
 Water flow monitoring system with an ESP32 sensor node, Django backend, and React (Vite) frontend.
 
+## First-Time Setup (After `git clone`)
+
+### Prerequisites
+- **Python 3.12+**
+- **Node.js 18+** & **npm**
+- **Arduino IDE** (for uploading the ESP32 firmware)
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/didoyu/aquatrack.git
+cd aquatrack
+```
+
+### 2. Backend Setup (`aquatrack-backend`)
+```powershell
+cd aquatrack-backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env
+python manage.py migrate
+cd ..
+```
+*(On macOS/Linux, activate with `source .venv/bin/activate` and copy with `cp .env.example .env`.)*
+
+### 3. Frontend Setup (`aquatrack-frontend`)
+```bash
+cd aquatrack-frontend
+npm install
+cd ..
+```
+
+---
+
 ## Quick Start
 
 Run the unified launcher from the repository root:
